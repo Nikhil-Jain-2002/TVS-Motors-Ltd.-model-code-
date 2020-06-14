@@ -3,4 +3,4 @@ opencv-python
 pandas
 glob3
 numpy==1.16.4
-
+pyyaml
