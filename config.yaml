@@ -1,0 +1,14 @@
+#User
+FACE_FEATURE_REQUIRED: True
+batch_size: 32
+image_paths: 'C:\\Users\\jainn\\Desktop\Git\\Face_Localize_Feature_Extract\\input\\Images\\'
+dest_path: 'C:\\Users\\jainn\\Desktop\\Git\\Face_Localize_Feature_Extract\\output'
+csv_name: 'face_fingerprint.csv'
+#Developer
+minsize: 20
+threshold: [0.6, 0.7, 0.7]
+factor: 0.709
+margin: 44
+image_size: 160
+BBox_Thresh: 0.95
+model_path: 'C:\\Users\\jainn\\Desktop\\Git\\Face_Localize_Feature_Extract\\models\\20180402-114759'
