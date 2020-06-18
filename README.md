@@ -1,10 +1,11 @@
 
 ### Face Localization using MTCNN model and Face Feature Extraction using Facenet
 
-Step 0: Face Feature Extraction Model to be downloaded from [here](https://drive.google.com/open?id=1EXPBSXwTaqrSC0OhUdXNmKSh9qJUQ55-). The downloaded model to be unzipped under model directory.
-Step 1: Required python 3.7 (more specific v3.7.3).  
-Step 2: Required packages can be installed using 'pip install -r requirements.txt' (may be, install in a virtual environment)  
-Step 3: Run '$python face_localize_feature_extract.py' on console. 
+Steps to be followed:
+0) Face Feature Extraction Model to be downloaded from [here](https://drive.google.com/open?id=1EXPBSXwTaqrSC0OhUdXNmKSh9qJUQ55-). The downloaded model to be unzipped under model directory.
+1) Required python 3.7 (more specific v3.7.3).  
+2) Required packages can be installed using 'pip install -r requirements.txt' (may be, install in a virtual environment)  
+3) Run '$python face_localize_feature_extract.py' on console. 
  
  
 Description:
