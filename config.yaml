@@ -1,7 +1,7 @@
 #User
-FACE_FEATURE_REQUIRED: True
+#FACE_FEATURE_REQUIRED: True
 batch_size: 32
-image_paths: 'C:\\Users\\jainn\\Desktop\Git\\Face_Localize_Feature_Extract\\input\\Images\\'
+image_paths: 'C:\\Users\\jainn\\Desktop\\Git\\Face_Localize_Feature_Extract\\uploads\\'
 dest_path: 'C:\\Users\\jainn\\Desktop\\Git\\Face_Localize_Feature_Extract\\output'
 csv_name: 'face_fingerprint.csv'
 #Developer

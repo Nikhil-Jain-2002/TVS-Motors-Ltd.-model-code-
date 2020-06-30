@@ -3,7 +3,7 @@ import sys #can be used to perform sys.exit()
 import cv2
 import numpy as np
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template, url_for, send_from_directory, flash
 from flask_cors import CORS
 import yaml
 import logging
@@ -14,6 +14,10 @@ from facenet.src.align import detect_face
 from logging.handlers import TimedRotatingFileHandler
 import logging.config
 from util import create_Dir, crop_image_by_bbox, load_config, create_network_face_detection, load_image_align_data, load_log_config
+from face_localize_feature_extract import main_func
+from werkzeug.utils import secure_filename
+from gevent.pywsgi import WSGIServer
+import shutil
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # being tried to avoid unnecessary/warning prints of Tensorfliow
 tf.get_logger().setLevel('INFO') # being tried to avoid unnecessary/warning prints of Tensorfliow
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR) #being tried to avoid unnecessary/warning prints of Tensorfliow
@@ -26,44 +30,53 @@ logger = logging.getLogger(__name__)
 config = load_config("config.yaml")
 
 
-from serve import get_model_api
-
-
 # define the app
 app = Flask(__name__)
 CORS(app) # needed for cross-domain requests, allow everything by default
+face_feature_req = True
 
-
-# logging for heroku
-if 'DYNO' in os.environ:
-    app.logger.addHandler(logging.StreamHandler(sys.stdout))
-    app.logger.setLevel(logging.INFO)
-
-
-# load the model
-model_api = get_model_api()
-
-
-# API route
-@app.route('/api', methods=['POST'])
-def api():
-    """API function
-    All model-specific logic to be defined in the get_model_api()
-    function
-    """
-    input_data = request.json
-    app.logger.info("api_input: " + str(input_data))
-    output_data = model_api(input_data)
-    app.logger.info("api_output: " + str(output_data))
-    response = jsonify(output_data)
-    return response
-
-
-@app.route('/')
+@app.route("/")
 def index():
-    return "Index API"
+    return render_template("upload.html")
+
+@app.route("/featureExtraction", methods=["GET"])
+def featureExtraction():
+    face_extract = request.args.get('face_extract')
+    if face_extract == "yes":
+        face_feature_req = True
+    elif face_extract == "no":
+        face_feature_req = False
+    else:
+        bad_request_given()
+    output_path = main_func(face_feature_req)
+    #output_path = output_path_folder + '\\Localized_Images'
+    shutil.rmtree("C:\\Users\\jainn\\Desktop\\Git\\Face_Localize_Feature_Extract\\uploads")
+    #shutil.rmtree("C:\\Users\\jainn\\Desktop\\Git\\Face_Localize_Feature_Extract\\output")
+    return render_template("client.html")
+    #return send_from_directory(output_path, filename, as_attachment=True)  
+
+
+@app.route("/upload", methods=["GET", "POST"])
+def upload():
+    if request.method == 'POST':
+        # Get the file from post request
+        f = request.files['file']
+        create_Dir("C:\\Users\\jainn\\Desktop\\Git\\Face_Localize_Feature_Extract\\", "uploads")
+        # Save the file to ./uploads
+        basepath = os.path.dirname(__file__)
+        file_path = os.path.join(basepath, "uploads")
+        #filename = secure_filename(f.filename)
+        f.save(file_path, secure_filename(f.filename))
+    return render_template("complete.html") 
 
 # HTTP Errors handlers
+@app.errorhandler(400)
+def bad_request_given():
+    return """
+    Please check the input (Y/N or y/n)
+    """, 400
+
+
 @app.errorhandler(404)
 def url_error(e):
     return """
@@ -80,5 +93,9 @@ def server_error(e):
 
 
 if __name__ == '__main__':
-    # This is used when running locally.
-    app.run(host='0.0.0.0', debug=True)
+    #This is used when running locally.
+    app.run(debug=True)
+
+
+
+

@@ -9,24 +9,26 @@ import tensorflow as tf
 import pandas as pd
 from facenet.src import facenet
 from facenet.src.align import detect_face
+import shutil
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # being tried to avoid unnecessary/warning prints of Tensorfliow
 tf.get_logger().setLevel('INFO') # being tried to avoid unnecessary/warning prints of Tensorfliow
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR) # being tried to avoid unnecessary/warning prints of Tensorfliow
 
+CONFIG_PATH = os.getcwd()
 # Function to load yaml configuration file
-CONFIG_PATH = "C:\\Users\\jainn\\Desktop\\Git\\Face_Localize_Feature_Extract"
 def load_config(config_name):
     with open(os.path.join(CONFIG_PATH, config_name)) as file:
         config = yaml.safe_load(file)
     return config
 config = load_config("config.yaml")
 
-#Log config
+#Function to load log config file
 def load_log_config(config_fname):
    with open(os.path.join(CONFIG_PATH, config_fname), 'r') as f:
       log_config = yaml.safe_load(f.read())
    return logging.config.dictConfig(log_config)
 log_config = load_log_config("logging.yaml")
+#Defining Logger
 logger = logging.getLogger(__name__)
 
 # Method to perform cropping the images using bounding box info.
@@ -58,7 +60,7 @@ def create_network_face_detection(gpu_memory_fraction):
             pnet, rnet, onet = detect_face.create_mtcnn(sess, None)
     return pnet, rnet, onet
 
-
+#Face Localization
 def load_image_align_data(dest_path, image_paths, image_size, margin, pnet, rnet, onet, discarded_folder_path='',
                           bbox_thresh=0.95):
    minsize = config["minsize"]  # minimum size of face
@@ -67,8 +69,8 @@ def load_image_align_data(dest_path, image_paths, image_size, margin, pnet, rnet
    image_list, image_names = [], []
    discared_image_cnt = 0
    img_files = glob(image_paths + '*.png')  # Incase glob doesn't work in Windows environment replace it with 'os' library module. #readme
-   img_files.extend(glob(image_paths + '*.jpg'))  # add more image extensions else restrict user to share images in specific format
-   img_files = sorted(img_files)  # chk length -- report error if its empty and exit
+   img_files.extend(glob(image_paths + '*.jpg'))
+   img_files = sorted(img_files)
    logging.info('Total images read are: ' + str(len(img_files)))
    if len(img_files) == 0:
       logger.error("Total images read are 0. Please input images. ")
@@ -159,10 +161,7 @@ def load_image_align_data(dest_path, image_paths, image_size, margin, pnet, rnet
       logger.debug('Total number of Localized images:' + str(len(images)))  # No. of images been able to be localized
       return images, fnames_list
    else:
-      # Perform exit & mention no faces recognized..check input folder
-      logger.info("load_image_align_data returned None !")
+      logger.info("No faces recognized, please input images.")
+      sys.exit()
       return None
-
-
-
-
+      
