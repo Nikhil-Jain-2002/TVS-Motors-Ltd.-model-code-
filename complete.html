@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Feature Extraction </title>
+<style> 
+            body { 
+                text-align:center; 
+            } 
+            h1 { 
+                color:green; 
+            } 
+        </style>
+</head>
+<body>
+    <h1>Second step, choose an option</h1>
+<form id="Enter_Value" action="{{ url_for('featureExtraction') }}" method="GET">
+    <select id="file-picker" name="face_extract"> 
+            <option>Choose an option</option> 
+            <option value="no">Face Localization only </option> 
+            <option value="yes">Face Localization and Face Feature Extraction </option> 
+    </select>
+    <input type="submit" value="Run!" id="upload-button">
+</form>         
+</body>
+</html>

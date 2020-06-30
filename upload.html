@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title> Face Localization and Feature Extraction </title>
+	<style> 
+            body { 
+                text-align:center; 
+            } 
+            h1 { 
+                color:green; 
+            } 
+    </style>
+</head>
+<body>
+<h1>First step, upload file</h1>
+<form id="upload-form" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+	<input id="image_input"  type='file' name='file' accept="image/*" multiple>
+	<input type="submit" value="Upload">
+</form>
+</body>
+</html>
