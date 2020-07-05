@@ -3,7 +3,7 @@ import sys #can be used to perform sys.exit()
 import cv2
 import numpy as np
 import os
-from flask import Flask, request, jsonify, render_template, url_for, send_from_directory, flash
+from flask import Flask, request, jsonify, render_template, url_for, send_from_directory, redirect
 from flask_cors import CORS
 import yaml
 import logging
@@ -13,7 +13,7 @@ from facenet.src import facenet
 from facenet.src.align import detect_face
 from logging.handlers import TimedRotatingFileHandler
 import logging.config
-from util import create_Dir, crop_image_by_bbox, load_config, create_network_face_detection, load_image_align_data, load_log_config
+from util import create_Dir, crop_image_by_bbox, load_config, create_network_face_detection,load_image_align_data, load_log_config
 from face_localize_feature_extract import main_func
 from werkzeug.utils import secure_filename
 from gevent.pywsgi import WSGIServer
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 #Loading config file
 config = load_config("config.yaml")
 
-
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 # define the app
 app = Flask(__name__)
 CORS(app) # needed for cross-domain requests, allow everything by default
@@ -52,22 +52,34 @@ def featureExtraction():
     #output_path = output_path_folder + '\\Localized_Images'
     shutil.rmtree("C:\\Users\\jainn\\Desktop\\Git\\Face_Localize_Feature_Extract\\uploads")
     #shutil.rmtree("C:\\Users\\jainn\\Desktop\\Git\\Face_Localize_Feature_Extract\\output")
-    return render_template("client.html")
+    #return output_path
+    return render_template("output_result.html")
     #return send_from_directory(output_path, filename, as_attachment=True)  
 
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
-    if request.method == 'POST':
-        # Get the file from post request
-        f = request.files['file']
-        create_Dir("C:\\Users\\jainn\\Desktop\\Git\\Face_Localize_Feature_Extract\\", "uploads")
+
+    target = os.path.join(APP_ROOT, 'uploads')
+    if not os.path.isdir(target):
+        os.mkdir(target)    
+    #For loop for getting multiples files from uploads... 
+    for file in request.files.getlist("file"):
+        filename = file.filename
+        destination = "/".join([target, filename])
+        file.save(destination)
+
+    """create_Dir("C:\\Users\\jainn\\Desktop\\Git\\Face_Localize_Feature_Extract\\", "uploads")
         # Save the file to ./uploads
-        basepath = os.path.dirname(__file__)
+        basepath = os.path.dirname(__files__)
         file_path = os.path.join(basepath, "uploads")
         #filename = secure_filename(f.filename)
-        f.save(file_path, secure_filename(f.filename))
+        f.save(file_path, secure_filename(f.filename))"""
     return render_template("complete.html") 
+
+"""@app.route("/output")
+def output_folder():
+    return render_template("output_result.html")"""
 
 # HTTP Errors handlers
 @app.errorhandler(400)
