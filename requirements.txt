@@ -2,5 +2,5 @@ tensorflow==1.14
 opencv-python
 pandas
 glob3
-numpy==1.16.4
+numpy==1.22.0
 pyyaml
